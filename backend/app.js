@@ -1,13 +1,12 @@
 import express, { json } from 'express';
 import prisma from './models/prisma.js';
+import router from './routes/routes.js';
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-app.get("/api",(req,res) =>{
-    res.json('hello');
-});
+app.use(router)
 
 const port = 5000;
 

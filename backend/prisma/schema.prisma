@@ -20,9 +20,11 @@ model User {
   id                String @id @default(uuid())
   username          String @unique
   hashed_password   String
-  role Role
+  role Role         @default(user)
   posts Post[]
   comments Comment[]
+  postlikes PostLike[]
+  commentlikes CommentLike[]
 
   @@map("user")
 }
@@ -37,6 +39,7 @@ model Post {
   published     Boolean   @default(false)
   likes         Int       @default(0)
   comments Comment[]
+  postlikes PostLike[]
 
   user User @relation(fields: [user_id], references: [id])
   @@map("post")
@@ -50,8 +53,32 @@ model Comment {
   updated_at    DateTime  @updatedAt
   text          String
   likes         Int       @default(0)
+  commentlikes CommentLike[]
 
   user User @relation(fields: [user_id],references: [id])
   post Post @relation(fields: [post_id],references: [id])
 
+  @@map("comment")
+}
+
+model PostLike {
+  id          String  @id @default(uuid())
+  user_id     String
+  post_id     String
+
+  user User @relation(fields: [user_id],references: [id])
+  post Post @relation(fields: [post_id],references: [id])
+
+  @@map("post_like")
+}
+
+model CommentLike {
+  id              String  @id @default(uuid())
+  user_id         String
+  comment_id      String
+
+  user    User @relation(fields: [user_id], references: [id])
+  comment Comment @relation(fields: [comment_id], references: [id])
+
+  @@map("comment_like")
 }

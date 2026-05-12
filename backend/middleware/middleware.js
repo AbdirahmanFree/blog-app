@@ -2,6 +2,7 @@ import prisma from "../models/prisma.js"
 import * as passwordUtils from "../utlis/password.js"
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
+import { Int32 } from "mongodb"
 dotenv.config()
 
 
@@ -64,8 +65,6 @@ const logIn = async(req,res) => {
 }
 
 const getPosts = async (req,res) =>{
-    console.log(req.userId)
-    console.log(req.userRole)
     const posts = await prisma.post.findMany({
         where: {
             published: true
@@ -79,7 +78,6 @@ const getPosts = async (req,res) =>{
 const createPost = async(req,res) => {
     const userId = req.userId
     const role = req.userRole
-    console.log(role)
     if(role =="user"){
         res.sendStatus(403)
     }
@@ -99,6 +97,158 @@ const createPost = async(req,res) => {
 
     }
 }
+
+const createComment = async (req,res) => {
+    const userId = req.userId
+    const postId = req.params.postId
+    const text = req.body.text
+    console.log(userId)
+    console.log(postId)
+    try{
+        const comment = await prisma.comment.create({
+        data: {
+            user_id: userId,
+            post_id: postId,
+            text: text,
+        }
+    })
+    res.json(comment)
+    } catch(error){
+        console.log(error)
+        res.status(500).json({
+            message: "Error creating comment"
+        })
+    }
+    
+}
+
+const togglePostLike = async (req,res) => {
+    const userId = req.userId
+    const postId = req.params.postId
+    const postLike = await prisma.postLike.findMany({
+        where: {
+            user_id: userId,
+            post_id: postId
+        }
+    })
+    const { likes } = await prisma.post.findUnique({
+            where: {
+                id: postId
+            }
+        })
+    if(postLike.length > 0){
+        const newLikesCount = Math.max(likes-1,0);
+        const deletedPostLike = await prisma.postLike.delete({
+            where:{
+                id: postLike[0].id,
+                user_id: userId,
+                post_id: postId
+            }
+        })
+        
+    
+        const newPost = await prisma.post.update({
+            where: {
+                id: postId
+            },
+            data: {
+                likes: newLikesCount
+            }
+    })
+        res.json({
+            message:"Removed like",
+            post_like: deletedPostLike 
+        })
+    }
+    else{
+        const newLikesCount = likes +1;
+        const postLike = await prisma.postLike.create({
+            data:{
+                user_id: userId,
+                post_id: postId
+            }
+        })
+
+        const newPost = await prisma.post.update({
+            where: {
+                id: postId
+            },
+            data: {
+                likes: newLikesCount
+            }
+        })
+        res.json({
+            message: "Added like",
+            post_like: postLike
+        })     
+    }
+    
+}
+
+const toggleCommentLike = async (req,res) => {
+    const userId = req.userId
+    const postId = req.params.postId
+    const commentId = req.params.commentId
+    const postLike = await prisma.postLike.findMany({
+        where: {
+            user_id: userId,
+            post_id: postId
+        }
+    })
+    const { likes } = await prisma.post.findUnique({
+            where: {
+                id: postId
+            }
+        })
+    if(postLike.length > 0){
+        const newLikesCount = Math.max(likes-1,0);
+        const deletedPostLike = await prisma.postLike.delete({
+            where:{
+                id: postLike[0].id,
+                user_id: userId,
+                post_id: postId
+            }
+        })
+        
+    
+        const newPost = await prisma.post.update({
+            where: {
+                id: postId
+            },
+            data: {
+                likes: newLikesCount
+            }
+    })
+        res.json({
+            message:"Removed like",
+            post_like: deletedPostLike 
+        })
+    }
+    else{
+        const newLikesCount = likes +1;
+        const postLike = await prisma.postLike.create({
+            data:{
+                user_id: userId,
+                post_id: postId
+            }
+        })
+
+        const newPost = await prisma.post.update({
+            where: {
+                id: postId
+            },
+            data: {
+                likes: newLikesCount
+            }
+        })
+        res.json({
+            message: "Added like",
+            post_like: postLike
+        })     
+    }
+    
+}
+
 
 const verifyToken = async (req,res,next) => {
     const bearerHeader= req.headers['authorization']
@@ -121,5 +271,7 @@ export {
     signUp,
     logIn,
     verifyToken,
-    createPost
+    createPost,
+    createComment,
+    togglePostLike
 }

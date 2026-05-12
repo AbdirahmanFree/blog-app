@@ -23,13 +23,13 @@ router.post("/api/sign-up",controller.signUp,controller.logIn)
 
 router.post("/api/log-in",controller.logIn)
 
-router.post("/api/posts",controller.verifyToken,controller.createPost)
+router.post("/api/posts/post",controller.verifyToken,controller.createPost)
 
-router.post("/api/posts/:postId",(req,res) => {
-  
-})
+router.post("/api/posts/:postId/comment",controller.verifyToken,controller.createComment)
 
-router.post("/api/posts/:postId",controller.verifyToken,controller.toggle)
+router.post("/api/posts/:postId/like",controller.verifyToken,controller.togglePostLike)
+
+router.post("/api/post/:postId/:commentId/like",(req,res)=>{})
 
 
 function verifyUser(req,res,next){

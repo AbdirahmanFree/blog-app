@@ -2,23 +2,14 @@ import { Router }from "express"
 import * as controller from "../middleware/middleware.js"
 const router = Router();
 
-//front end routes
-
-
-
 router.get("/api/posts",controller.verifyToken,controller.getPosts)
 
-router.get("/api/posts/:postId",(req,res) =>{
-    res.json(`get post with id ${req.params.postId}`)
-})
+router.get("/api/posts/:postId",controller.verifyToken,controller.getPost)
 
-router.get("/api/posts/:postId/comments",(req,res) => {
-    res.json(`get comments under post with id ${req.params.postId}`)
-})
+router.get("/api/comments",controller.verifyToken,controller.getComments)
 
-router.get("/api/users",(req,res) => {
-    res.json('get users')
-})
+router.get("/api/comments/:commentId",controller.verifyToken,controller.getComment)
+
 router.post("/api/sign-up",controller.signUp,controller.logIn)
 
 router.post("/api/log-in",controller.logIn)
@@ -29,7 +20,7 @@ router.post("/api/posts/:postId/comment",controller.verifyToken,controller.creat
 
 router.post("/api/posts/:postId/like",controller.verifyToken,controller.togglePostLike)
 
-router.post("/api/post/:postId/:commentId/like",(req,res)=>{})
+router.post("/api/comments/:postId/:commentId/like",controller.verifyToken,controller.toggleCommentLike)
 
 
 function verifyUser(req,res,next){

@@ -2,7 +2,6 @@ import prisma from "../models/prisma.js"
 import * as passwordUtils from "../utlis/password.js"
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
-import { Int32 } from "mongodb"
 dotenv.config()
 
 
@@ -75,6 +74,16 @@ const getPosts = async (req,res) =>{
     })
 }
 
+const getPost = async (req,res) => {
+    const post = await prisma.post.findUnique({
+        where:{
+            id: req.params.postId
+        }
+        
+    });
+    res.json(post)
+}
+
 const createPost = async(req,res) => {
     const userId = req.userId
     const role = req.userRole
@@ -96,6 +105,20 @@ const createPost = async(req,res) => {
         res.json(post)
 
     }
+}
+
+const getComments = async(req,res) => {
+    const comments = await prisma.comment.findMany();
+    res.json({comments})
+}
+
+const getComment = async(req,res) => {
+    const comment = await prisma.comment.findUnique({
+        where: {
+            id: req.params.commentId
+        }
+    })
+    res.json({comment})
 }
 
 const createComment = async (req,res) => {
@@ -187,33 +210,32 @@ const togglePostLike = async (req,res) => {
 
 const toggleCommentLike = async (req,res) => {
     const userId = req.userId
-    const postId = req.params.postId
     const commentId = req.params.commentId
-    const postLike = await prisma.postLike.findMany({
+    const commentLike = await prisma.commentLike.findMany({
         where: {
             user_id: userId,
-            post_id: postId
+            comment_id: commentId,
         }
     })
-    const { likes } = await prisma.post.findUnique({
+    const { likes } = await prisma.comment.findUnique({
             where: {
-                id: postId
+                id: commentId
             }
         })
-    if(postLike.length > 0){
+    if(commentLike.length > 0){
         const newLikesCount = Math.max(likes-1,0);
-        const deletedPostLike = await prisma.postLike.delete({
+        const deletedCommentLike = await prisma.commentLike.delete({
             where:{
-                id: postLike[0].id,
+                id: commentLike[0].id,
                 user_id: userId,
-                post_id: postId
+                comment_id: commentId
             }
         })
         
     
-        const newPost = await prisma.post.update({
+        const newPost = await prisma.comment.update({
             where: {
-                id: postId
+                id: commentId
             },
             data: {
                 likes: newLikesCount
@@ -221,21 +243,21 @@ const toggleCommentLike = async (req,res) => {
     })
         res.json({
             message:"Removed like",
-            post_like: deletedPostLike 
+            comment_like: deletedCommentLike 
         })
     }
     else{
         const newLikesCount = likes +1;
-        const postLike = await prisma.postLike.create({
+        const commentLike = await prisma.commentLike.create({
             data:{
                 user_id: userId,
-                post_id: postId
+                comment_id: commentId
             }
         })
 
-        const newPost = await prisma.post.update({
+        const newComment = await prisma.comment.update({
             where: {
-                id: postId
+                id: commentId
             },
             data: {
                 likes: newLikesCount
@@ -243,7 +265,7 @@ const toggleCommentLike = async (req,res) => {
         })
         res.json({
             message: "Added like",
-            post_like: postLike
+            comment_like: commentLike
         })     
     }
     
@@ -273,5 +295,9 @@ export {
     verifyToken,
     createPost,
     createComment,
-    togglePostLike
+    togglePostLike,
+    toggleCommentLike,
+    getPost,
+    getComment,
+    getComments
 }

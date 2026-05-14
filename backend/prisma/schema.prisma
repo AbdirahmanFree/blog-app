@@ -21,6 +21,7 @@ model User {
   username          String @unique
   hashed_password   String
   role Role         @default(user)
+  deleted Boolean         @default(false)
   posts Post[]
   comments Comment[]
   postlikes PostLike[]

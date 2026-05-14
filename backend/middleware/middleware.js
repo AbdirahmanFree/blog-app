@@ -34,7 +34,7 @@ const logIn = async(req,res) => {
             username: req.body.username
         }
     })
-    if(user == null){
+    if(!user || user.deleted){
         res.status(404).json({
             message: "user not found"
         })
@@ -69,9 +69,7 @@ const getPosts = async (req,res) =>{
             published: true
         }
     });
-    res.json({
-        posts: posts
-    })
+    res.json({posts})
 }
 
 const getPost = async (req,res) => {
@@ -81,7 +79,7 @@ const getPost = async (req,res) => {
         }
         
     });
-    res.json(post)
+    res.json({post})
 }
 
 const createPost = async(req,res) => {
@@ -102,7 +100,7 @@ const createPost = async(req,res) => {
                 published: published
             }
         })
-        res.json(post)
+        res.json({post})
 
     }
 }
@@ -135,7 +133,7 @@ const createComment = async (req,res) => {
             text: text,
         }
     })
-    res.json(comment)
+    res.json({comment})
     } catch(error){
         console.log(error)
         res.status(500).json({
@@ -271,6 +269,134 @@ const toggleCommentLike = async (req,res) => {
     
 }
 
+const updatePost = async (req,res) => {
+    try{
+        const post = await prisma.post.update({
+            where: {
+                id: req.params.postId,
+                user_id: req.userId
+            },
+            data:{
+                title: req.body.title,
+                content: req.body.content
+            }
+
+        })
+        res.json({post})
+    }catch(error){
+        res.status(403).json({message: 'error editing post', error})
+    }
+    
+}
+const updateComment = async (req,res) => {
+    try {
+        const comment = await prisma.comment.update({
+            where: {
+                id: req.params.commentId,
+                user_id: req.userId
+            },
+            data:{
+                text: req.body.text
+            }
+        })
+        res.json({comment})
+    } catch(error){
+        res.status(403).json({message: 'error editing comment', error})
+    }
+}
+
+const getAdminPosts = async (req,res) => {
+    const posts = await prisma.post.findMany({
+        where: {
+            user_id: req.userId
+        }
+    })
+
+    res.json({posts})
+}
+
+const getUser = async (req,res) => {
+    try{
+        const user = await prisma.user.findUnique({
+            where:{
+                id: req.userId
+            }
+        })
+        res.json({user:{
+            username:user.username,
+        }})
+    } catch(error){
+        res.status(500).json({
+            message: "Internal error",
+            error: error
+        })
+    }
+}
+
+const deletePost = async (req,res) => {
+    const postId = req.params.postId
+    const userId = req.userId
+    
+    try{
+        const post = await prisma.post.update({
+           where:{
+                id: postId,
+                user_id: userId
+            },
+            data:{
+                title: "[DELETED]",
+                content: "[DELETED]"
+            }
+        })
+        res.json({post})
+    } catch(error){
+        res.status(403).json({message:"Could not delete post",error})
+    }
+    
+    
+    
+}
+
+const deleteComment = async (req,res) => {
+    const commentId = req.params.commentId
+    const userId = req.userId
+
+    try{
+        const comment = await prisma.comment.update({
+            where:{
+                id:commentId,
+                user_id:userId
+            },
+            data:{
+                text: "[DELETED]"
+            }
+        })
+        res.json({comment})
+    } catch(error){
+        res.status(403).json({message:"Could not delete comment",error})
+    }
+    
+}
+
+const deleteUser = async (req,res) => {
+    const userId = req.userId
+    console.log(userId)
+    try{
+        const user = await prisma.user.update({
+            where:{
+                id:userId
+            },
+            data:{
+                deleted: true
+            }
+        })
+        res.json({message:`successfully deleted user:${userId} `})
+    } catch(error){
+        res.status(403).json({message:"Could not delete user",error})
+    }
+    
+}
+
 
 const verifyToken = async (req,res,next) => {
     const bearerHeader= req.headers['authorization']
@@ -279,9 +405,20 @@ const verifyToken = async (req,res,next) => {
     }
     else{
         const bearerToken = bearerHeader.split(' ')[1]
-        jwt.verify(bearerToken,process.env["SECERET_KEY"],function(err,decoded){
+        jwt.verify(bearerToken,process.env["SECERET_KEY"], async function(err,decoded){
+            const user = await prisma.user.findUnique({
+                where: {
+                    id:  decoded.id
+                }
+            })
+            if(!user || user.deleted){
+                return res.status(401).json({
+                    message: "User no longer exists"
+                })
+            }
             req.userId = decoded.id
             req.userRole = decoded.role
+
         })
         next()
     }
@@ -299,5 +436,12 @@ export {
     toggleCommentLike,
     getPost,
     getComment,
-    getComments
+    getComments,
+    updatePost,
+    getAdminPosts,
+    updateComment,
+    getUser,
+    deletePost,
+    deleteComment,
+    deleteUser
 }

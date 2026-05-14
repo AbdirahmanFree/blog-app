@@ -22,12 +22,20 @@ router.post("/api/posts/:postId/like",controller.verifyToken,controller.togglePo
 
 router.post("/api/comments/:postId/:commentId/like",controller.verifyToken,controller.toggleCommentLike)
 
+router.put("/api/posts/:postId",controller.verifyToken,controller.updatePost)
 
-function verifyUser(req,res,next){
-    next()
-}
+router.get("/api/admin/posts",controller.verifyToken,controller.getAdminPosts)
 
-function verifyAdmin(req,res,next){
-    next()
-}
+router.put("/api/comments/:commentId",controller.verifyToken,controller.updateComment)
+
+router.get("/api/user",controller.verifyToken,controller.getUser)
+
+router.delete("/api/comments/:commentId",controller.verifyToken,controller.deleteComment)
+
+router.delete("/api/posts/:postId",controller.verifyToken,controller.deletePost)
+
+router.delete("/api/user",controller.verifyToken,controller.deleteUser)
+
+
+
 export default router

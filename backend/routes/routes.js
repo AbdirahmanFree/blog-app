@@ -1,55 +1,41 @@
 import { Router }from "express"
+import * as controller from "../middleware/middleware.js"
 const router = Router();
 
-//front end routes
-router.get("/home",(req,res) => {
-    res.json('Welcome to the home page browse and give your reactions to different blog posts!')
-})
+router.get("/api/posts",controller.verifyToken,controller.getPosts)
 
-router.get("/admin/home",verifyAdmin,(req,res) => {
-    res.json('Admin page create read update and destroy blog posts ')
-})
+router.get("/api/posts/:postId",controller.verifyToken,controller.getPost)
 
+router.get("/api/comments",controller.verifyToken,controller.getComments)
 
-router.get("/api/posts",(req,res) => {
-    res.json('Get all posts')
-})
+router.get("/api/comments/:commentId",controller.verifyToken,controller.getComment)
 
-router.get("/api/posts/:postId",(req,res) =>{
-    res.json(`get post with id ${req.params.postId}`)
-})
+router.post("/api/sign-up",controller.signUp,controller.logIn)
 
-router.get("/api/posts/:postId/comments",(req,res) => {
-    res.json(`get comments under post with id ${req.params.postId}`)
-})
+router.post("/api/log-in",controller.logIn)
 
-router.get("/api/users",(req,res) => {
-    res.json('get users')
-})
-router.post("/api/sign-up",(req,res) => {
-    //add too database do validation checks and what not
-    console.log(req.body)
-    res.json('sign up')
-})
+router.post("/api/posts/post",controller.verifyToken,controller.createPost)
 
-router.post("/api/log-in",(req,res) =>{
-    // sign jwt token jwt token and send back to user
-})
+router.post("/api/posts/:postId/comment",controller.verifyToken,controller.createComment)
 
-router.post("/api/posts/:postId",(req,res) => {
-    // create posts
-})
+router.post("/api/posts/:postId/like",controller.verifyToken,controller.togglePostLike)
 
-router.post("/api/posts/:postID/:commentId",(req,res) => {
-    // create comments
-})
+router.post("/api/comments/:postId/:commentId/like",controller.verifyToken,controller.toggleCommentLike)
+
+router.put("/api/posts/:postId",controller.verifyToken,controller.updatePost)
+
+router.get("/api/admin/posts",controller.verifyToken,controller.getAdminPosts)
+
+router.put("/api/comments/:commentId",controller.verifyToken,controller.updateComment)
+
+router.get("/api/user",controller.verifyToken,controller.getUser)
+
+router.delete("/api/comments/:commentId",controller.verifyToken,controller.deleteComment)
+
+router.delete("/api/posts/:postId",controller.verifyToken,controller.deletePost)
+
+router.delete("/api/user",controller.verifyToken,controller.deleteUser)
 
 
-function verifyUser(req,res,next){
-    next()
-}
 
-function verifyAdmin(req,res,next){
-    next()
-}
 export default router

@@ -1,8 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { LoginForm } from "@/components/login-form";
 import { GalleryVerticalEnd } from "lucide-react";
 
 function LogIn(){
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+
+ 
+
+  const handleLogin= async (e) => {
+    e.preventDefault();
+    
+    console.log('username: ',username)
+    console.log('password: ',password)
+  }
     return(
         <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
@@ -12,7 +23,7 @@ function LogIn(){
           </div>
           Blog App
         </a>
-        <LoginForm />
+        <LoginForm setUsername={setUsername} setPassword={setPassword} handleLogin={handleLogin} />
       </div>
     </div>
     )

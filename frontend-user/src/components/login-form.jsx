@@ -30,20 +30,17 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={(e)=> {props.handleLogin(e)}}>
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input id="email" type="email" placeholder="m@example.com" required />
+                <FieldLabel htmlFor="username">Username</FieldLabel>
+                <Input id="username" type="text" placeholder="username" required onChange={(e)=>{props.setUsername(e.target.value)}} />
               </Field>
               <Field>
                 <div className="flex items-center">
                   <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <a href="#" className="ml-auto text-sm underline-offset-4 hover:underline">
-                    Forgot your password?
-                  </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input on id="password" type="password" required onChange={(e)=> {props.setPassword(e.target.value)}} />
               </Field>
               <Field>
                 <Button type="submit">Login</Button>

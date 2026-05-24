@@ -9,7 +9,7 @@ function LogIn(){
 
  
 
-  const handleLogin= async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     try{
       const response = await axiosInstance.post("/api/log-in",{

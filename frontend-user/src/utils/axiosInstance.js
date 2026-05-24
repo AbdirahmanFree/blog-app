@@ -1,6 +1,4 @@
 import axios from "axios";
-import { useNavigate } from "react-router";
-const navigate = useNavigate()
 const axiosInstance = axios.create({
     baseURL:'http://localhost:5000/',
     timeout: 1000,
@@ -30,15 +28,16 @@ axiosInstance.interceptors.response.use(
     (error) => {
         if(error.response){
             if(error.response.status === 401){
-                navigate("/login")
+                window.location.href = "/login";
             }
             else if(error.response.status ===500){
                 console.error("Server error. Please try again later")
             }
-            else if(error.code === "ECONNABORTED"){
+
+        }
+         else if(error.code === "ECONNABORTED"){
                 console.error("Request timed out. Please try again later")
             }
-        }
         return Promise.reject(error)
     }
 )

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { LoginForm } from "@/components/login-form";
 import { GalleryVerticalEnd } from "lucide-react";
+import axiosInstance from "@/utils/axiosInstance";
 
 function LogIn(){
   const [username, setUsername] = useState("")
@@ -10,9 +11,26 @@ function LogIn(){
 
   const handleLogin= async (e) => {
     e.preventDefault();
-    
-    console.log('username: ',username)
-    console.log('password: ',password)
+    try{
+      const response = await axiosInstance.post("/api/log-in",{
+        username: username,
+        password: password
+      })
+      
+      const token = response.data.token
+      if(token){
+        localStorage.setItem("token",token)
+        
+        console.log("fetched from local storage",localStorage.getItem("token"))
+      }
+      else{
+        console.log("incorrect login details")
+      }
+    } catch(error){
+      console.error(error)
+    }
+      
+
   }
     return(
         <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">

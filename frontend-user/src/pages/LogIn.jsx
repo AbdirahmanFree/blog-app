@@ -1,9 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { LoginForm } from "@/components/login-form";
 import { GalleryVerticalEnd } from "lucide-react";
 import axiosInstance from "@/utils/axiosInstance";
+import { UserContext } from "@/context/UserContext";
+
+
 
 function LogIn(){
+  const { updateUser } = useContext(UserContext)
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
 
@@ -16,10 +20,12 @@ function LogIn(){
         username: username,
         password: password
       })
-      
+      update
       const token = response.data.token
       if(token){
         localStorage.setItem("token",token)
+        const user = await axiosInstance.get("/api/user")
+        console.log(user)
         
         console.log("fetched from local storage",localStorage.getItem("token"))
       }

@@ -324,6 +324,7 @@ const getUser = async (req,res) => {
         })
         res.json({user:{
             username:user.username,
+            id: user.id
         }})
     } catch(error){
         res.status(500).json({
@@ -419,8 +420,8 @@ const verifyToken = async (req,res,next) => {
             req.userId = decoded.id
             req.userRole = decoded.role
 
+            next()
         })
-        next()
     }
 }
 

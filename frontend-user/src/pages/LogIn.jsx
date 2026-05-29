@@ -20,13 +20,13 @@ function LogIn(){
         username: username,
         password: password
       })
-      update
+
       const token = response.data.token
       if(token){
         localStorage.setItem("token",token)
-        const user = await axiosInstance.get("/api/user")
-        console.log(user)
-        
+        const userRes = await axiosInstance.get("/api/user")
+        const user = userRes.data.user
+        updateUser(user)
         console.log("fetched from local storage",localStorage.getItem("token"))
       }
       else{

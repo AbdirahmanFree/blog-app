@@ -27,7 +27,6 @@ function LogIn(){
         const userRes = await axiosInstance.get("/api/user")
         const user = userRes.data.user
         updateUser(user)
-        console.log("fetched from local storage",localStorage.getItem("token"))
       }
       else{
         console.log("incorrect login details")

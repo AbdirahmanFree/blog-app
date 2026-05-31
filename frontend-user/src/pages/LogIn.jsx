@@ -3,7 +3,7 @@ import { LoginForm } from "@/components/login-form";
 import { GalleryVerticalEnd } from "lucide-react";
 import axiosInstance from "@/utils/axiosInstance";
 import { UserContext } from "@/context/UserContext";
-import { Navigate, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { UseUserAuth } from "@/hooks/useUserAuth";
 import { Spinner } from "@/components/ui/spinner";
 
@@ -16,10 +16,6 @@ function LogIn(){
   const [password, setPassword] = useState("")
   const navigate = useNavigate()
   
- console.log("Login page", user)
-
- 
-
   const handleLogin = async (e) => {
     e.preventDefault();
     try{

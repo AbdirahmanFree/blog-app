@@ -37,7 +37,6 @@ function SignUp(){
                 localStorage.setItem("token",token)
                 const userResponse = await axiosInstance.get("/api/user");
                 const user = userResponse.data.user
-                console.log(user)
                 updateUser(user)
                 navigate("/")
             }else{

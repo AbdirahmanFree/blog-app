@@ -6,7 +6,7 @@ import { useNavigate } from "react-router";
 export const UseUserAuth = () =>{
     const {user, updateUser, clearUser, loading, setLoading} = useContext(UserContext)
 
-    
+
 
 
     useEffect(()=>{
@@ -23,9 +23,7 @@ export const UseUserAuth = () =>{
                 const newUser = userResponse.data.user
 
                 if (isMounted && newUser){
-                    console.log("before updateUser", newUser);
                     updateUser(newUser)
-                    console.log("after updateUser", newUser);
                 }
                 
 

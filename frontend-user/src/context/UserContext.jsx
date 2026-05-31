@@ -14,14 +14,6 @@ function UserProvider({ children }){
         setUser(null)
     }
 
-    useEffect(() => {
-        console.log("USER CONTEXT CHANGED:", user);
-    }, [user]);
-
-    useEffect(() => {
-        console.log("LOADING CHANGED:", loading);
-    }, [loading]);
-
     return (
         <UserContext.Provider
         value={{

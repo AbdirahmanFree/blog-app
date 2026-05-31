@@ -3,13 +3,20 @@ import { LoginForm } from "@/components/login-form";
 import { GalleryVerticalEnd } from "lucide-react";
 import axiosInstance from "@/utils/axiosInstance";
 import { UserContext } from "@/context/UserContext";
+import { Navigate, useNavigate } from "react-router";
+import { UseUserAuth } from "@/hooks/useUserAuth";
+import { Spinner } from "@/components/ui/spinner";
 
 
 
 function LogIn(){
-  const { updateUser } = useContext(UserContext)
+  UseUserAuth()
+  const { updateUser, user, loading } = useContext(UserContext)
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const navigate = useNavigate()
+  
+ console.log("Login page", user)
 
  
 
@@ -27,6 +34,8 @@ function LogIn(){
         const userRes = await axiosInstance.get("/api/user")
         const user = userRes.data.user
         updateUser(user)
+        navigate("/")
+        
       }
       else{
         console.log("incorrect login details")
@@ -37,7 +46,10 @@ function LogIn(){
       
 
   }
-    return(
+  if(loading){
+    return (<Spinner/>)
+  }
+  else{ return(
         <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
         <a href="#" className="flex items-center gap-2 self-center font-medium">
@@ -50,6 +62,7 @@ function LogIn(){
       </div>
     </div>
     )
+  }
 }
 
 export default LogIn

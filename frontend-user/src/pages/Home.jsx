@@ -1,11 +1,13 @@
 import React, {useContext, useEffect} from "react";
 import {UserContext} from "@/context/UserContext";
+import { UseUserAuth } from "@/hooks/useUserAuth";
 
 function Home(){
-    const {user} = useContext(UserContext)
+    UseUserAuth()
 
     return(
     <>
+    hello
     </>
     )
 }

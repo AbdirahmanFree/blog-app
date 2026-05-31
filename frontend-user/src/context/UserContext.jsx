@@ -1,9 +1,10 @@
-import { createContext, useState } from "react"
+import { createContext, useState, useEffect } from "react"
 
 export const UserContext = createContext()
 
 function UserProvider({ children }){
     const [user,setUser] = useState(null)
+    const [loading,setLoading] = useState(true)
 
     function updateUser(userData){
         setUser(userData)
@@ -13,12 +14,23 @@ function UserProvider({ children }){
         setUser(null)
     }
 
+    useEffect(() => {
+        console.log("USER CONTEXT CHANGED:", user);
+    }, [user]);
+
+    useEffect(() => {
+        console.log("LOADING CHANGED:", loading);
+    }, [loading]);
+
     return (
         <UserContext.Provider
         value={{
             user,
             updateUser,
-            clearUser
+            clearUser,
+            setLoading,
+            loading
+
         }}
         >
             {children}

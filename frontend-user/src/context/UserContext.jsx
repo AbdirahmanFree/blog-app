@@ -1,9 +1,10 @@
-import { createContext, useState } from "react"
+import { createContext, useState, useEffect } from "react"
 
 export const UserContext = createContext()
 
 function UserProvider({ children }){
     const [user,setUser] = useState(null)
+    const [loading,setLoading] = useState(true)
 
     function updateUser(userData){
         setUser(userData)
@@ -18,7 +19,10 @@ function UserProvider({ children }){
         value={{
             user,
             updateUser,
-            clearUser
+            clearUser,
+            setLoading,
+            loading
+
         }}
         >
             {children}

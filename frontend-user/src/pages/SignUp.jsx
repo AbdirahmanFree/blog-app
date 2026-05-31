@@ -1,15 +1,17 @@
-import React, {createContext, useState} from "react";
+import React, { useContext, useState} from "react";
 import { SignupForm } from "@/components/signup-form";
 import { passwordMatch, validatePassword, validateUsername } from "@/utils/utils";
 import axiosInstance from "@/utils/axiosInstance";
 import { UserContext } from "@/context/UserContext";
+import { useNavigate } from "react-router";
 
 
 function SignUp(){
     const [username,setUsername] = useState("")
     const [password,setPassword] = useState("")
     const [confirmPassword,setConfirmPassword] = useState("")
-    const {updateUser} = createContext(UserContext)
+    const {updateUser} = useContext(UserContext)
+    const navigate = useNavigate()
 
     async function handleSignUp(e){
         e.preventDefault()
@@ -35,8 +37,8 @@ function SignUp(){
                 localStorage.setItem("token",token)
                 const userResponse = await axiosInstance.get("/api/user");
                 const user = userResponse.data.user
-                console.log(user)
                 updateUser(user)
+                navigate("/")
             }else{
                 console.log("incorrect sign up details")
             }

@@ -67,9 +67,18 @@ const getPosts = async (req,res) =>{
     const posts = await prisma.post.findMany({
         where: {
             published: true
+        },
+        include:{
+            user:{
+                select: {
+                    username: true
+                }
+            }
         }
     });
+
     res.json({posts})
+   
 }
 
 const getPost = async (req,res) => {
@@ -398,15 +407,60 @@ const deleteUser = async (req,res) => {
     
 }
 
+const getPostLike = async (req,res) => {
+    try{
+        const postId = req.params.postId
+        const userId = req.userId
+        const postLike = await prisma.postLike.findFirst({
+            where:{
+                user_id: userId,
+                post_id: postId
+            }
+        })
+        const bool = !!postLike
+
+        res.json(bool)
+
+    } catch(error){
+        res.status(403).json({message:"Coudnt get postLike",error})
+    }
+}
+
+const getCommentLike = async (req,res) => {
+    try{
+       
+        const commentId = req.params.commentId
+        const userId = req.userId
+        const commentLike = await prisma.commentLike.findFirst({
+            where:{
+                user_id: userId,
+                comment_id: commentId,
+                
+            }
+        })
+        const bool = !!commentLike
+
+        res.json(bool)
+
+    } catch(error){
+        res.status(403).json({message:"Coudnt get postLike",error})
+    }
+}
+
 
 const verifyToken = async (req,res,next) => {
     const bearerHeader= req.headers['authorization']
     if(typeof bearerHeader =="undefined"){
-        res.sendStatus(403)
+        return res.sendStatus(403)
     }
     else{
         const bearerToken = bearerHeader.split(' ')[1]
         jwt.verify(bearerToken,process.env["SECERET_KEY"], async function(err,decoded){
+            if(err){
+                return res.status(401).json({
+                message: "Invalid or expired token"
+            });
+            }
             const user = await prisma.user.findUnique({
                 where: {
                     id:  decoded.id
@@ -444,5 +498,7 @@ export {
     getUser,
     deletePost,
     deleteComment,
-    deleteUser
+    deleteUser,
+    getPostLike,
+    getCommentLike
 }

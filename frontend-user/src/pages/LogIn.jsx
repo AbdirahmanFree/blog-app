@@ -4,7 +4,7 @@ import { GalleryVerticalEnd } from "lucide-react";
 import axiosInstance from "@/utils/axiosInstance";
 import { UserContext } from "@/context/UserContext";
 import { useNavigate } from "react-router";
-import { UseUserAuth } from "@/hooks/useUserAuth";
+import { UseUserAuth } from "@/hooks/UseUserAuth";
 import { Spinner } from "@/components/ui/spinner";
 
 

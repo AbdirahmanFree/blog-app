@@ -15,7 +15,7 @@ router.post("/api/log-in",controller.logIn)
 router.post("/api/sign-up",controller.signUp,controller.logIn)
 
 // (blog) comment routes
-router.get("/api/comments",controller.verifyToken,controller.getComments)
+router.get("/api/posts/:postId/comments",controller.verifyToken,controller.getComments)
 router.get("/api/comments/:commentId",controller.verifyToken,controller.getComment)
 router.post("/api/posts/:postId/comment",controller.verifyToken,controller.createComment)
 router.put("/api/comments/:commentId",controller.verifyToken,controller.updateComment)
@@ -25,6 +25,7 @@ router.delete("/api/comments/:commentId",controller.verifyToken,controller.delet
 router.post("/api/posts/:postId/like",controller.verifyToken,controller.togglePostLike)
 router.post("/api/comments/:postId/:commentId/like",controller.verifyToken,controller.toggleCommentLike)
 router.get("/api/posts/:postId/like",controller.verifyToken, controller.getPostLike)
+router.get("/api/posts/:postId/likes",controller.verifyToken, controller.getPostLikes)
 router.get("/api/comments/:postId/:commentId/like",controller.verifyToken, controller.getCommentLike)
 
 // (blog) 

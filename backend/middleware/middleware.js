@@ -63,6 +63,42 @@ const logIn = async(req,res) => {
     }
 }
 
+const adminLogIn = async (req,res) => {
+    const user = await prisma.user.findFirst({
+        where:{
+            username: req.body.username,
+            role: "admin"
+        }
+    })
+    if(!user || user.deleted){
+        res.status(404).json({
+            message: "user not found"
+        })
+    } 
+    else{
+        const match = await passwordUtils.comparePasswords(req.body.password,user.hashed_password)
+        if(match){
+            jwt.sign({id: user.id, role: user.role},process.env["SECERET_KEY"],{expiresIn: '1d'}, function(err,token){
+                if(err){
+                    res.status(500).json({
+                        message: "Internal server cannot sign jwt token"
+                    })
+                }
+                else{
+                    res.status(200).json({
+                        token: token,
+                    })
+                }
+            })
+        }
+        else{
+            res.status(404).json({
+                message: "password does not match"
+            })
+        }
+    }
+}
+
 const getPosts = async (req,res) =>{
     const posts = await prisma.post.findMany({
         where: {
@@ -536,5 +572,6 @@ export {
     deleteUser,
     getPostLike,
     getCommentLike,
-    getPostLikes
+    getPostLikes,
+    adminLogIn
 }

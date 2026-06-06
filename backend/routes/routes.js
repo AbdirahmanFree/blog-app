@@ -12,6 +12,7 @@ router.delete("/api/posts/:postId",controller.verifyToken,controller.deletePost)
 
 // (blog) auth routes
 router.post("/api/log-in",controller.logIn)
+router.post("/api/admin/log-in",controller.adminLogIn)
 router.post("/api/sign-up",controller.signUp,controller.logIn)
 
 // (blog) comment routes

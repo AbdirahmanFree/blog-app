@@ -85,9 +85,17 @@ const getPost = async (req,res) => {
     const post = await prisma.post.findUnique({
         where:{
             id: req.params.postId
+        },
+        include: {
+            user: {
+                select: {
+                    username: true
+                }
+            }
         }
         
     });
+
     res.json({post})
 }
 
@@ -115,7 +123,17 @@ const createPost = async(req,res) => {
 }
 
 const getComments = async(req,res) => {
-    const comments = await prisma.comment.findMany();
+    const comments = await prisma.comment.findMany({
+        where:{
+        post_id: req.params.postId
+            },
+        include: {
+            user:{
+                select: {
+                    username: true
+                }
+            }
+} });
     res.json({comments})
 }
 
@@ -426,6 +444,23 @@ const getPostLike = async (req,res) => {
     }
 }
 
+const getPostLikes = async (req,res) => {
+    try{
+        const postId = req.params.postId
+        const postLikes = await prisma.postLike.findMany({
+            where:{
+                post_id: postId
+            }
+        })
+
+
+        res.json(postLikes.length)
+
+    } catch(error){
+        res.status(403).json({message:"Coudnt get postLike",error})
+    }
+}
+
 const getCommentLike = async (req,res) => {
     try{
        
@@ -500,5 +535,6 @@ export {
     deleteComment,
     deleteUser,
     getPostLike,
-    getCommentLike
+    getCommentLike,
+    getPostLikes
 }

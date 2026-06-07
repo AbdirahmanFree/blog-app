@@ -3,8 +3,6 @@ import { Spinner } from "@/components/ui/spinner";
 import { UseUserAuth } from "@/hooks/useUserAuth";
 import axiosInstance from "@/utils/axiosInstance";
 import { useEffect, useState } from "react";
-import { FaRegThumbsUp } from "react-icons/fa";
-import { FaThumbsUp } from "react-icons/fa";
 import { useNavigate } from "react-router";
 
 function Home(){
@@ -15,15 +13,14 @@ function Home(){
     useEffect(()=>{
         const fetchPosts = async () => {
             const postRes = await axiosInstance.get("/api/posts")
-            const postsArray = postRes.data.posts
-            console.log(postsArray)
-            postsArray.forEach(async (post)=>{
-                const date = new Date(post.updated_at)
-                const formatedDate = date.toLocaleDateString("en-US",{month: "long", day: "numeric", year: "numeric"})
-                post.date = formatedDate
-                setPosts([...posts,post])
-                setLoading(false)
-            })
+            const formattedPosts = postRes.data.posts.map((post) => ({
+                ...post,
+                date: (new Date(post.updated_at)).toLocaleDateString("en-US",{month: "long", day: "numeric", year: "numeric"})
+            }))
+            
+            setPosts(formattedPosts)
+            setLoading(false)
+            
         }
         fetchPosts()
     },[])
